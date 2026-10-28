@@ -1,0 +1,52 @@
+seed: 42
+output_dir: outputs/mask_diffusion_v1
+data:
+  cache_dir: /media/25880586@su/D512/med-diffusion-project/data/cached_mask_latents
+  split_file: /media/25880586@su/D512/data/gbm/splits/multimodal_seed42.json
+  mask_manifest: /media/25880586@su/D512/data/gbm/tumor_masks_upenn_ucsf/tumor_masks_manifest.csv
+  image_size: 256
+  slice_axis: 2
+  tumour_only: true
+
+vae:
+  checkpoint: /media/25880586@su/D512/med-diffusion-project/outputs/seg_vae_f8_c4/checkpoints/best.pt
+
+diffusion:
+  checkpoint: outputs/mask_diffusion_v1/checkpoints/last.pt
+  latent_channels: 4
+  base_channels: 128
+  time_dim: 512
+  norm_groups: 32
+  dropout: 0.0
+  num_timesteps: 1000
+  beta_start: 0.0001
+  beta_end: 0.02
+
+training:
+  epochs: 100
+  batch_size: 64
+  num_workers: 4
+  learning_rate: 2.5e-4
+  weight_decay: 0.0001
+
+  mixed_precision: true
+  amp_dtype: bf16
+  condition_drop_probability: 0.1
+
+  latent_scale_batches: 100
+
+evaluation:
+  seed: 1234
+  sample_every: 5
+  num_examples: 4
+  guidance_scale: 2.0
+
+testing:
+  seed: 42
+  batch_size: 8
+  num_workers: 4
+  output_dir: outputs/mask_gen_eval
+  samples_per_condition: 5
+  guidance_scale: 2.0
+  max_conditions: 100
+  subset_seed: 42

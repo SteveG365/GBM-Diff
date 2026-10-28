@@ -1,0 +1,41 @@
+seed: 42
+output_dir: outputs/seg_vae_f8_c4
+
+data:
+  split_file: /workspace/data/gbm/splits/multimodal_seed42.json
+  mask_manifest: /workspace/data/gbm/tumor_masks_upenn_ucsf/tumor_masks_manifest.csv
+  image_size: 256
+  slice_axis: 2
+  tumour_only: true
+
+vae:
+  in_channels: 4
+  out_channels: 4
+  base_channels: 64
+  channel_mults: [1, 2, 4, 4]
+  latent_channels: 4
+  num_res_blocks: 2
+  num_res_blocks_decoder: 3
+  norm_groups: 32
+  dropout: 0.0
+  use_checkpoint: false
+
+vae_loss:
+  ce_weight: 1.0
+  dice_weight: 1.0
+  kl_weight: 1.0e-4
+  kl_warmup_epochs: 2
+
+training:
+  epochs: 100
+  batch_size: 16
+  num_workers: 8
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-4
+  mixed_precision: true
+  amp_dtype: bf16
+
+evaluation:
+  seed: 1234
+  num_examples: 6
+  plot_every: 1

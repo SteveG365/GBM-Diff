@@ -1,0 +1,44 @@
+seed: 42
+
+data:
+  split_file: /media/25880586@su/D512/data/gbm/splits/multimodal_seed42.json
+  mask_manifest: /media/25880586@su/D512/data/gbm/tumor_masks_upenn_ucsf/tumor_masks_manifest.csv
+  image_size: 256
+  slice_axis: 2
+  tumour_only: true
+
+generator:
+  factory: pipeline_evaluation.adapters:make_controlnet
+
+  config:
+    helper_module: scripts.visualise_mri_controlnet
+    config_path: configs/cereberus/controlnet_v2.yml
+    control_checkpoint: outputs/mri_controlnet_v2/checkpoints/latest.pt
+    backbone_checkpoint: outputs/diffusion_v2/checkpoints/latest.pt
+    vae_checkpoint: outputs/vae_results/checkpoints/best.pt
+    latent_shape: [16, 32, 32]
+    guidance_scale: 1.0
+    device: cuda
+    use_ema: true
+    deterministic: false
+
+
+evaluation:
+  split: test
+  modalities: [t1, t1gd, t2, flair]
+  seeds: [101]
+  max_samples: 7000
+  save_samples: true
+  save_sample_interval: 100
+  output_dir: outputs/wt_evaluation_fid
+  generation_batch_size: 16
+  fid_batch_size: 16
+  resume: true
+  running_fid_interval: 5
+
+interventions:
+  size:
+    enabled: true
+    reference_modality: flair
+    area_factors: [0.8, 1.2]
+    min_changed_pixels: 1

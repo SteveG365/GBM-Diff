@@ -1,0 +1,22 @@
+# Python 3.12
+# Core training stack (torch 2.7 pairs with torchvision 0.22)
+torch==2.7.0
+torchvision==0.22.0
+
+# MRI volumes, arrays, tables, and patient splitting
+numpy==1.26.4
+scipy==1.15.3
+pandas==2.2.3
+nibabel==5.3.2
+scikit-learn==1.6.1
+
+# Configuration and progress reporting
+PyYAML==6.0.2
+tqdm==4.67.1
+
+# Image output and evaluation used by the backbone trainer
+Pillow==11.1.0
+matplotlib==3.10.1
+torchmetrics[image]==1.6.2
+torch-fidelity==0.3.0
+seaborn

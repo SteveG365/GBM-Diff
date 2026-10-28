@@ -1,0 +1,74 @@
+seed: 42
+
+data:
+  root: /media/25880586@su/D512/data/gbm
+  cached_control_train_dir: /media/25880586@su/D512/med-diffusion-project/data/vae_latents_control_multiclass/train
+  cached_control_val_dir: /media/25880586@su/D512/med-diffusion-project/data/vae_latents_control_multiclass/val
+  modalities:
+    - t1
+    - t1gd
+    - t2
+    - flair
+  require_all_modalities: True
+  split_file: /media/25880586@su/D512/data/gbm/splits/multimodal_seed42.json
+  control_fraction: 0.25
+  image_size: 256
+  slice_axis: 2
+  val_fraction: 0.1
+  test_fraction: 0.1
+  min_foreground_fraction: 0.01
+  lower_percentile: 0.5
+  upper_percentile: 99.5
+
+vae:
+  checkpoint: /media/25880586@su/D512/med-diffusion-project/outputs/vae_results/checkpoints/best.pt
+  in_channels: 1
+  out_channels: 1
+  base_channels: 64
+  channel_mults: [1, 2, 4, 4]
+  latent_channels: 16
+  num_res_blocks: 2
+  num_res_blocks_decoder: 3
+  norm_groups: 32
+  dropout: 0.0
+  use_checkpoint: false
+
+diffusion:
+  architecture: "latent_v2"
+  checkpoint: /media/25880586@su/D512/med-diffusion-project/outputs/diffusion_v2/checkpoints/latest.pt
+  num_modalities: 4
+  base_channels: 192
+  time_dim: 512
+  norm_groups: 32
+  dropout: 0.0
+  guidance_scale: 1.0
+  num_timesteps: 1000
+  beta_start: 0.0001
+  beta_end: 0.02
+
+control:
+  enabled: true
+  type: brainmri_controlnet
+  checkpoint: outputs/mri_controlnet_v2/checkpoints/latest.pt
+  condition_channels: 1
+
+control_evaluation:
+  num_examples: 4
+  max_mask_candidates: 512
+  seed: 1234
+
+control_training:
+  output_dir: outputs/mri_controlnet_v2
+  batch_size: 32
+  num_epochs: 200
+  learning_rate: 1.0e-5
+  weight_decay: 1.0e-4
+  mixed_precision: true
+  amp_dtype: bf16
+  num_workers: 4
+  compile: false
+
+evaluation:
+  batch_size: 16
+ema:
+  enabled: true
